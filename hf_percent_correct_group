@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Oct 22 12:12:02 2019
+
+@author: katieemmons
+"""
+
+import pandas as pd
+import glob
+
+'''
+to calculate average percent correct for an entire group (100, 200,...,500) us the script below
+replace path with desired group folder
+'''
+
+#choose folder
+path = r'/Users/katieemmons/Desktop/behavioral/100'
+
+#searches for files in path that end in .txt
+filenames = glob.glob(path + '/*.txt')
+
+#creates df of all files in folder
+df = pd.concat((pd.read_csv(f) for f in filenames))
+df['correct resp'] = df.resp == df.want
+
+#list of conditions to search for in percentCorrect(str)
+conditions = ["maintain space", "maintain pitch", "maintain both", "switch space", "switch pitch", "switch both"] 
+
+#function to calculate average percent correct for a given condition
+def percentCorrect(str):
+    correct_responses = (df.loc[df['cond'] == str, 'correct resp'].sum())
+    total_trials = ((df['cond'] == str).sum())
+    return (correct_responses/total_trials * 100)
+
+#iterates percentCorrect over all conditions, prints result
+for x in conditions:
+    percentCorrect(x)
+    print(x, percentCorrect(x))
